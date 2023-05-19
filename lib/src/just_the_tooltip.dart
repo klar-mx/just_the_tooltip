@@ -192,14 +192,9 @@ class _JustTheTooltipOverlayState extends JustTheTooltipState<OverlayEntry> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    assert(
-      Overlay.maybeOf(context) != null,
-      '${widget.runtimeType} require an Overlay widget ancestor for correct operation.',
-    );
-
-    return super.build(context);
-  }
+  Widget build(BuildContext context) => Overlay.maybeOf(context) != null
+      ? super.build(context)
+      : const SizedBox();
 
   @override
   void _createNewEntries() {
