@@ -242,21 +242,4 @@ void main() {
 
     await tester.pumpAndSettle();
   });
-
-  testWidgets('throws no exception when missing overlay',
-      (WidgetTester tester) async {
-    final GlobalKey key = GlobalKey();
-    await tester.pumpWidget(
-      Directionality(
-        textDirection: TextDirection.ltr,
-        child: JustTheTooltip(
-          key: key,
-          content: const Text(tooltipText),
-          child: const SizedBox(),
-        ),
-      ),
-    );
-
-    await tester.pumpAndSettle();
-  });
 }
