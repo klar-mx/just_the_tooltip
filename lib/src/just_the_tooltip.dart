@@ -172,19 +172,23 @@ class _JustTheTooltipOverlayState extends JustTheTooltipState<OverlayEntry> {
 
   @override
   Future<bool> ensureTooltipVisible() async {
-    cancelShowTimer();
+    try {
+      cancelShowTimer();
 
-    // Already visible.
-    if (hasEntry) {
-      cancelHideTimer();
+      // Already visible.
+      if (hasEntry) {
+        cancelHideTimer();
 
+        await _animationController.forward();
+        return false;
+      }
+
+      _createNewEntries();
       await _animationController.forward();
+      return true;
+    } catch (_) {
       return false;
     }
-
-    _createNewEntries();
-    await _animationController.forward();
-    return true;
   }
 
   @override
