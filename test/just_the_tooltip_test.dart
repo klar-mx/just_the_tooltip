@@ -242,4 +242,23 @@ void main() {
 
     await tester.pumpAndSettle();
   });
+
+  testWidgets('shows sized box instead of tooltip when no overlay',
+      (WidgetTester tester) async {
+    final GlobalKey key = GlobalKey();
+    await tester.pumpWidget(
+      Directionality(
+        textDirection: TextDirection.ltr,
+        child: JustTheTooltip(
+          key: key,
+          content: const Text(tooltipText),
+          child: const SizedBox(),
+        ),
+      ),
+    );
+
+    await tester.pumpAndSettle();
+
+    expect(find.byType(SizedBox), findsOneWidget);
+  });
 }
