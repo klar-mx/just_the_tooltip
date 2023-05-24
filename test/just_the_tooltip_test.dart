@@ -82,13 +82,13 @@ void main() {
     await tester.pump(const Duration(seconds: 2));
 
     /********************* 800x600 screen
-     *      o            * y=0
-     *      |            * }- 20.0 vertical offset, of which 10.0 is in the screen edge margin
-     *   +----+          * \- (5.0 padding in height)
-     *   |    |          * |- 20 height
-     *   +----+          * /- (5.0 padding in height)
-     *                   *
-     *********************/
+         *      o            * y=0
+         *      |            * }- 20.0 vertical offset, of which 10.0 is in the screen edge margin
+         *   +----+          * \- (5.0 padding in height)
+         *   |    |          * |- 20 height
+         *   +----+          * /- (5.0 padding in height)
+         *                   *
+         *********************/
 
     final RenderBox tip = tester.renderObject(
       _findTooltipContainer(tooltipText),
@@ -146,15 +146,15 @@ void main() {
     await tester.pump(const Duration(seconds: 2));
 
     /************************ 800x600 screen
-     *   ________________   * }- 20.0 padding outside overlay
-     *  |    o           |  * y=0
-     *  |    |           |  * }- 20.0 vertical offset, of which 10.0 is in the screen edge margin
-     *  | +----+         |  * \- (5.0 padding in height)
-     *  | |    |         |  * |- 20 height
-     *  | +----+         |  * /- (5.0 padding in height)
-     *  |________________|  *
-     *                      * } - 20.0 padding outside overlay
-     ************************/
+         *   ________________   * }- 20.0 padding outside overlay
+         *  |    o           |  * y=0
+         *  |    |           |  * }- 20.0 vertical offset, of which 10.0 is in the screen edge margin
+         *  | +----+         |  * \- (5.0 padding in height)
+         *  | |    |         |  * |- 20 height
+         *  | +----+         |  * /- (5.0 padding in height)
+         *  |________________|  *
+         *                      * } - 20.0 padding outside overlay
+         ************************/
 
     final RenderBox tip = tester.renderObject(
       _findTooltipContainer(tooltipText),
@@ -225,4 +225,40 @@ void main() {
   //   expect(tip.localToGlobal(tip.size.topLeft(Offset.zero)),
   //       equals(const Offset(10.0, 20.0)));
   // });
+
+  testWidgets('throws no exception when missing overlay',
+      (WidgetTester tester) async {
+    final GlobalKey key = GlobalKey();
+    await tester.pumpWidget(
+      Directionality(
+        textDirection: TextDirection.ltr,
+        child: JustTheTooltip(
+          key: key,
+          content: const Text(tooltipText),
+          child: const SizedBox(),
+        ),
+      ),
+    );
+
+    await tester.pumpAndSettle();
+  });
+
+  testWidgets('shows sized box instead of tooltip when no overlay',
+      (WidgetTester tester) async {
+    final GlobalKey key = GlobalKey();
+    await tester.pumpWidget(
+      Directionality(
+        textDirection: TextDirection.ltr,
+        child: JustTheTooltip(
+          key: key,
+          content: const Text(tooltipText),
+          child: const SizedBox(),
+        ),
+      ),
+    );
+
+    await tester.pumpAndSettle();
+
+    expect(find.byType(SizedBox), findsOneWidget);
+  });
 }
