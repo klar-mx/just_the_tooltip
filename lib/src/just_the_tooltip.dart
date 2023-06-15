@@ -178,6 +178,7 @@ class _JustTheTooltipOverlayState extends JustTheTooltipState<OverlayEntry> {
       await _animationController.forward();
       return true;
     } catch (_) {
+      print('AAAAA CATCH 181');
       return false;
     }
   }
@@ -189,35 +190,39 @@ class _JustTheTooltipOverlayState extends JustTheTooltipState<OverlayEntry> {
 
   @override
   void _createNewEntries() {
-    // The builder on these run twice on hot reload and then again from our
-    // didUpdateWidget.
-    final entryOverlay = OverlayEntry(
-      builder: (context) => _createEntry(),
-    );
-    final skrimOverlay = OverlayEntry(builder: (context) => _createSkrim());
+    try {
+      // The builder on these run twice on hot reload and then again from our
+      // didUpdateWidget.
+      final entryOverlay = OverlayEntry(
+        builder: (context) => _createEntry(),
+      );
+      final skrimOverlay = OverlayEntry(builder: (context) => _createSkrim());
 
-    final overlay = Overlay.of(context);
+      final overlay = Overlay.of(context);
 
-    if (overlay == null) {
-      throw StateError('Cannot find the overlay for the context $context');
+      if (overlay == null) {
+        throw StateError('Cannot find the overlay for the context $context');
+      }
+
+      setState(
+        () {
+          // In the case of a modal, we enter a skrim overlay to catch taps
+          if (widget.isModal) {
+            entry = entryOverlay;
+            skrim = skrimOverlay;
+
+            overlay.insert(skrimOverlay);
+            overlay.insert(entryOverlay, above: skrimOverlay);
+          } else {
+            entry = entryOverlay;
+
+            overlay.insert(entryOverlay);
+          }
+        },
+      );
+    } catch (_) {
+      print('BBBBB: CATCH 224');
     }
-
-    setState(
-      () {
-        // In the case of a modal, we enter a skrim overlay to catch taps
-        if (widget.isModal) {
-          entry = entryOverlay;
-          skrim = skrimOverlay;
-
-          overlay.insert(skrimOverlay);
-          overlay.insert(entryOverlay, above: skrimOverlay);
-        } else {
-          entry = entryOverlay;
-
-          overlay.insert(entryOverlay);
-        }
-      },
-    );
   }
 
   @override
