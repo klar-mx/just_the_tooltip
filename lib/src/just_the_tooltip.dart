@@ -191,8 +191,22 @@ class _JustTheTooltipOverlayState extends JustTheTooltipState<OverlayEntry> {
   void _createNewEntries() {
     // The builder on these run twice on hot reload and then again from our
     // didUpdateWidget.
+    Widget? overlayEntry;
+
+    try {
+      overlayEntry = _createEntry();
+    } catch (_) {
+      overlayEntry = null;
+    }
+
+    final _overlayEntry = overlayEntry;
+
+    if (_overlayEntry == null) {
+      return;
+    }
+
     final entryOverlay = OverlayEntry(
-      builder: (context) => _createEntry(),
+      builder: (_) => _overlayEntry,
     );
     final skrimOverlay = OverlayEntry(builder: (context) => _createSkrim());
 
