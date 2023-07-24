@@ -9,7 +9,7 @@ import 'package:just_the_tooltip/src/positioned_tooltip.dart';
 
 part 'just_the_tooltip_entry.dart';
 
-typedef ShowTooltip = Future<void> Function({
+typedef ShowTooltip = Future<bool> Function({
   bool immediately,
 
   /// If set to true, this will set the timer for the tooltip to close.
