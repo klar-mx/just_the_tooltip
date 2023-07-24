@@ -179,13 +179,15 @@ class _JustTheTooltipEntryState extends JustTheTooltipState<Widget> {
   }
 
   @override
-  void _createNewEntries() {
+  bool _createNewEntries() {
     final entry = _createEntry();
     final skrim = _createSkrim();
 
     final tooltipArea = JustTheTooltipArea.of(context);
 
     tooltipArea.setEntries(entry: entry, skrim: skrim);
+
+    return true;
   }
 
   void _updateEntries() {

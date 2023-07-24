@@ -9,7 +9,7 @@ import 'package:just_the_tooltip/src/positioned_tooltip.dart';
 
 part 'just_the_tooltip_entry.dart';
 
-typedef ShowTooltip = Future<void> Function({
+typedef ShowTooltip = Future<bool> Function({
   bool immediately,
 
   /// If set to true, this will set the timer for the tooltip to close.
@@ -174,7 +174,11 @@ class _JustTheTooltipOverlayState extends JustTheTooltipState<OverlayEntry> {
         return false;
       }
 
-      _createNewEntries();
+      final didCreateEntries = _createNewEntries();
+      if (!didCreateEntries) {
+        return false;
+      }
+
       await _animationController.forward();
       return true;
     } catch (_) {
@@ -188,7 +192,7 @@ class _JustTheTooltipOverlayState extends JustTheTooltipState<OverlayEntry> {
       : const SizedBox();
 
   @override
-  void _createNewEntries() {
+  bool _createNewEntries() {
     // The builder on these run twice on hot reload and then again from our
     // didUpdateWidget.
     Widget? overlayEntry;
@@ -202,7 +206,7 @@ class _JustTheTooltipOverlayState extends JustTheTooltipState<OverlayEntry> {
     final _overlayEntry = overlayEntry;
 
     if (_overlayEntry == null) {
-      return;
+      return false;
     }
 
     final entryOverlay = OverlayEntry(
@@ -232,6 +236,7 @@ class _JustTheTooltipOverlayState extends JustTheTooltipState<OverlayEntry> {
         }
       },
     );
+    return true;
   }
 
   @override
@@ -290,7 +295,7 @@ abstract class JustTheTooltipState<T> extends State<JustTheInterface>
   /// inserted into the tree is dependent on tooltip strategy of using
   /// overlays or widgets.
   // ignore: unused_element
-  void _createNewEntries();
+  bool _createNewEntries();
 
   /// Removes the tooltip entry and tooltip entry.
   void _removeEntries();
@@ -485,7 +490,7 @@ abstract class JustTheTooltipState<T> extends State<JustTheInterface>
     return future;
   }
 
-  Future<void> _showTooltip({
+  Future<bool> _showTooltip({
     bool immediately = false,
 
     /// This will usually be only true in the case of a controller requesting
@@ -495,8 +500,8 @@ abstract class JustTheTooltipState<T> extends State<JustTheInterface>
   }) async {
     cancelHideTimer();
 
-    final completer = Completer<void>();
-    final future = completer.future.then((_) {
+    final completer = Completer<bool>();
+    final future = completer.future.then<bool>((result) {
       widget.onShow?.call();
 
       if (mounted) {
@@ -506,6 +511,8 @@ abstract class JustTheTooltipState<T> extends State<JustTheInterface>
           _hideTooltip();
         }
       }
+
+      return result;
     });
 
     if (immediately) {
@@ -513,16 +520,16 @@ abstract class JustTheTooltipState<T> extends State<JustTheInterface>
       // _handlePointerEvent has been called (which happens after every tap
       // event).
       WidgetsBinding.instance.addPostFrameCallback((_) async {
-        await ensureTooltipVisible();
-        completer.complete();
+        final isTooltipSurelyVisible = await ensureTooltipVisible();
+        completer.complete(isTooltipSurelyVisible);
       });
 
       return future;
     }
 
     _showTimer ??= Timer(waitDuration, () async {
-      await ensureTooltipVisible();
-      completer.complete();
+      final isTooltipSurelyVisible = await ensureTooltipVisible();
+      completer.complete(isTooltipSurelyVisible);
     });
 
     return future;

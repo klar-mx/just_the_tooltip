@@ -15,7 +15,7 @@ class JustTheController extends ValueNotifier<TooltipStatus> {
     hideTooltip = defaultHideTooltip;
   }
 
-  static Future<void> defaultShowTooltip({
+  static Future<bool> defaultShowTooltip({
     bool immediately = false,
     bool autoClose = false,
   }) {
