@@ -56,6 +56,8 @@ class JustTheTooltip extends StatefulWidget implements JustTheInterface {
     this.shadow,
     this.showWhenUnlinked = false,
     this.scrollController,
+    this.inSpotlight = false,
+    this.spotlightSkrimColor,
   }) : super(key: key);
 
   @override
@@ -148,6 +150,12 @@ class JustTheTooltip extends StatefulWidget implements JustTheInterface {
 
   @override
   final ScrollController? scrollController;
+
+  @override
+  final bool inSpotlight;
+
+  @override
+  final Color? spotlightSkrimColor;
 
   @override
   JustTheTooltipState<OverlayEntry> createState() =>
@@ -662,12 +670,22 @@ abstract class JustTheTooltipState<T> extends State<JustTheInterface>
   }
 
   Widget _createSkrim() {
+    final renderBox = context.findRenderObject() as RenderBox?;
+
     return GestureDetector(
       key: skrimKey,
       behavior: barrierDismissible
           ? HitTestBehavior.translucent
           : HitTestBehavior.deferToChild,
       onTap: _hideTooltip,
+      child: widget.inSpotlight && renderBox != null
+          ? CustomPaint(
+              painter: _SpotlightPainter(
+                rect: renderBox.localToGlobal(Offset.zero) & renderBox.size,
+                color: widget.spotlightSkrimColor ?? Colors.transparent,
+              ),
+            )
+          : null,
     );
   }
 
@@ -787,5 +805,31 @@ abstract class JustTheTooltipState<T> extends State<JustTheInterface>
       target,
       offsetToTarget,
     );
+  }
+}
+
+class _SpotlightPainter extends CustomPainter {
+  final Rect rect;
+  final Color color;
+
+  _SpotlightPainter({required this.rect, required this.color});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    Rect outerRect = Offset.zero & size;
+    Paint paint = Paint()..color = color;
+
+    Path path = Path.combine(
+      PathOperation.difference,
+      Path()..addRect(outerRect),
+      Path()..addRRect(RRect.fromRectAndRadius(rect, const Radius.circular(8))),
+    );
+
+    canvas.drawPath(path, paint);
+  }
+
+  @override
+  bool shouldRepaint(_SpotlightPainter old) {
+    return old.color != color || old.rect != rect;
   }
 }

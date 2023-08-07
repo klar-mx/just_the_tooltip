@@ -226,4 +226,11 @@ abstract class JustTheInterface extends StatefulWidget {
   /// example, if the tooltip happens to go beyond its quadrant but there is
   /// scroll space beneath it the bounds will accomadate it.
   ScrollController? get scrollController;
+
+  /// If true, will create a spotlight effect around the target by means of a
+  /// skrim with a hole cut out therearound.
+  bool get inSpotlight;
+
+  /// The color of the skrim used for the spotlight effect.
+  Color? get spotlightSkrimColor;
 }
