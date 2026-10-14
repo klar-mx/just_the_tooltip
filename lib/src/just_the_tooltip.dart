@@ -790,7 +790,9 @@ abstract class JustTheTooltipState<T> extends State<JustTheInterface>
       );
     }
 
-    final targetSize = box.getDryLayout(const BoxConstraints.tightForFinite());
+    // The target is already laid out. Dry layout is unsupported by widgets
+    // such as LayoutBuilder and may differ from the target's actual bounds.
+    final targetSize = box.size;
     final target = box.localToGlobal(box.size.center(Offset.zero));
     // TODO: Instead of this, change the alignment on
     // [CompositedTransformFollower]. That way we can allow a user configurable
